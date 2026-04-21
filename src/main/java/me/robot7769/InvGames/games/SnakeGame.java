@@ -52,8 +52,8 @@ public class SnakeGame extends Minigame {
 
         spawnFood();
         render();
-        player.openInventory(inventory);
         player.sendMessage("Snake start! Ovladas sipkami dole: <- ^ -> v");
+        player.openInventory(inventory);
     }
 
     @Override
