@@ -1,0 +1,16 @@
+system:
+  no_permission: "&cNemáš pravo na použití tohoto příkazu."
+  player_only: "&cTento prikaz muže použít jen hrač."
+  already_playing: "&cUž hrajete jinou minihru. Nejdřiv ji ukončete zavřením inventáře."
+  usage: "&cPoužití: /game <nazev_hry|reload>"
+  reloaded: "&aInvGames configurace byla úspěšně načtena."
+  unknown_game: "&cNeznámá hra: %game%"
+  starting: "&aSpouštím hru %game%."
+
+cookieclicker:
+  earned_away: "&a[Cookie Clicker] Získal jsi &e%earned% &acookies když jsi byl/a pryč!"
+  gui_title: "Cookie Clicker"
+  cookie_name: "&6&lUltimátní Cookie"
+  upgrades_shop: "&e&lUpgrady Obchod"
+  back: "&c&lZpět"
+
