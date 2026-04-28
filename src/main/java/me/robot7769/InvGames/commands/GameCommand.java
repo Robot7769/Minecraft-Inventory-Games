@@ -1,5 +1,6 @@
 package me.robot7769.InvGames.commands;
 
+import me.robot7769.InvGames.games.CookieClicker;
 import me.robot7769.InvGames.games.SnakeGame;
 import me.robot7769.InvGames.manager.GameManager;
 import org.bukkit.command.Command;
@@ -38,6 +39,10 @@ public class GameCommand implements CommandExecutor {
             case "snake":
                 gameManager.startGame(player, new SnakeGame(player));
                 player.sendMessage("Spoustim hru Snake.");
+                break;
+            case "cookie":
+                gameManager.startGame(player, new CookieClicker(player));
+                player.sendMessage("Spoustim hru Cookie Clicker.");
                 break;
             default:
                 player.sendMessage("Neznama hra: " + args[0]);
