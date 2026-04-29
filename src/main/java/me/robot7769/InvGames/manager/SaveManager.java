@@ -144,9 +144,7 @@ public class SaveManager {
      * Hard-fires saving behaviors pushing file YAMLs or gracefully instructing SQL pipelines to close processing logic securely.
      */
     public void save() {
-        if (sqlManager.isEnabled()) {
-            sqlManager.disconnect();
-        } else {
+        if (!sqlManager.isEnabled()) {
             try {
                 dataConfig.save(dataFile);
             } catch (IOException e) {

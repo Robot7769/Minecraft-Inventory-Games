@@ -22,17 +22,23 @@ public class CookieClicker extends Minigame {
     private int upgradesButtonSlot;
     private int oneTimeButtonSlot;
     private int achievementsButtonSlot;
+    private int rebirthButtonSlot;
     private int backButtonSlot;
+    private int prevPageButtonSlot;
+    private int nextPageButtonSlot;
 
     private double cookies = 0;
+    private double heavenlyChips = 0;
     private double clickMultiplier = 1;
     private double autoCookiesPerSecond = 0;
 
-    private enum MenuState { MAIN, UPGRADES, ONE_TIME, ACHIEVEMENTS }
+    private enum MenuState { MAIN, UPGRADES, ONE_TIME, ACHIEVEMENTS, REBIRTH }
     private MenuState menuState = MenuState.MAIN;
+    private int currentAchPage = 0;
 
     private List<Upgrade> upgrades;
     private List<Upgrade> oneTimeUpgrades;
+    private List<RebirthUpgrade> rebirthUpgrades;
     private List<Achievement> achievementsList;
 
     public CookieClicker(Player player) {
@@ -47,9 +53,12 @@ public class CookieClicker extends Minigame {
             config.set("inventory_size", 45);
             config.set("slots.cookie", 22);
             config.set("slots.upgrades_button", 26);
-            config.set("slots.one_time_button", 27);
-            config.set("slots.achievements_button", 28);
+            config.set("slots.one_time_button", 17);
+            config.set("slots.achievements_button", 18);
+            config.set("slots.rebirth_button", 40);
             config.set("slots.back_button", 36);
+            config.set("slots.prev_page_button", 38);
+            config.set("slots.next_page_button", 42);
 
             config.set("upgrades.cursor.name", "Cursor");
             config.set("upgrades.cursor.material", "WOODEN_PICKAXE");
@@ -90,12 +99,16 @@ public class CookieClicker extends Minigame {
         this.invSize = config.getInt("inventory_size", 45);
         this.cookieSlot = config.getInt("slots.cookie", 22);
         this.upgradesButtonSlot = config.getInt("slots.upgrades_button", 26);
-        this.oneTimeButtonSlot = config.getInt("slots.one_time_button", 27);
-        this.achievementsButtonSlot = config.getInt("slots.achievements_button", 28);
+        this.oneTimeButtonSlot = config.getInt("slots.one_time_button", 17);
+        this.achievementsButtonSlot = config.getInt("slots.achievements_button", 18);
+        this.rebirthButtonSlot = config.getInt("slots.rebirth_button", 40);
         this.backButtonSlot = config.getInt("slots.back_button", 36);
+        this.prevPageButtonSlot = config.getInt("slots.prev_page_button", 38);
+        this.nextPageButtonSlot = config.getInt("slots.next_page_button", 42);
 
         upgrades = loadUpgrades(config, "upgrades");
         oneTimeUpgrades = loadUpgrades(config, "one-time-upgrades");
+        rebirthUpgrades = loadRebirthUpgrades(config, "rebirth-upgrades");
 
         achievementsList = new ArrayList<>();
         if (config.getConfigurationSection("achievements") != null) {
@@ -121,7 +134,39 @@ public class CookieClicker extends Minigame {
             msgConfig.set("cookieclicker.upgrades_shop", "&e&lUpgrades Shop");
             msgConfig.set("cookieclicker.one_time_shop", "&b&lOne-Time Upgrades");
             msgConfig.set("cookieclicker.achievements", "&d&lAchievements");
+            msgConfig.set("cookieclicker.rebirth", "&5&lRebirth Menu");
+            msgConfig.set("cookieclicker.do_rebirth", "&d&lAscend!");
             msgConfig.set("cookieclicker.back", "&c&lBack");
+
+            msgConfig.set("cookieclicker.stats_cookies", "&fCookies: &e%cookies%");
+            msgConfig.set("cookieclicker.stats_click", "&fCookies per click: &e%click%");
+            msgConfig.set("cookieclicker.stats_cps", "&fCookies per second: &e%cps%");
+            msgConfig.set("cookieclicker.stats_chips", "&bHeavenly Chips: &f%chips%");
+            msgConfig.set("cookieclicker.lore_upgrades", "&7Click to open upgrades");
+            msgConfig.set("cookieclicker.lore_one_time", "&7Special rare upgrades");
+            msgConfig.set("cookieclicker.lore_achievements", "&7View your progress");
+            msgConfig.set("cookieclicker.lore_rebirth_1", "&7Ascend and unlock heavenly magic");
+            msgConfig.set("cookieclicker.lore_rebirth_2", "&bChips: %chips%");
+            msgConfig.set("cookieclicker.lore_return", "&7Return to game");
+            msgConfig.set("cookieclicker.lore_locked", "&c%name% &7(Locked)");
+            msgConfig.set("cookieclicker.req_cookies", "&eRequires Cookies: %req%");
+            msgConfig.set("cookieclicker.req_cps", "&eRequires CPS: %req%");
+            msgConfig.set("cookieclicker.req_click", "&eRequires Click: %req%");
+            msgConfig.set("cookieclicker.achievement_unlocked", "&a&lUNLOCKED");
+            msgConfig.set("cookieclicker.prev_page", "&e&lPrevious Page");
+            msgConfig.set("cookieclicker.next_page", "&e&lNext Page");
+            msgConfig.set("cookieclicker.lore_ascend_1", "&7Forfeit your cookies to ascend.");
+            msgConfig.set("cookieclicker.lore_ascend_2", "&bPending Chips: &f%chips%");
+            msgConfig.set("cookieclicker.lore_ascend_3", "&eCurrent Cookies: %cookies%");
+            msgConfig.set("cookieclicker.rebirth_purchased", "&a&lPURCHASED");
+            msgConfig.set("cookieclicker.rebirth_cost_afford", "&eCost: %cost% Chips");
+            msgConfig.set("cookieclicker.rebirth_cost_deny", "&cCost: %cost% Chips");
+            msgConfig.set("cookieclicker.upgrade_level", "&a%name% &7(Level %level%)");
+            msgConfig.set("cookieclicker.upgrade_cost_afford", "&eCost: %cost%");
+            msgConfig.set("cookieclicker.upgrade_cost_deny", "&cCost: %cost% &4(Too expensive)");
+            msgConfig.set("cookieclicker.msg_ascended", "&dYou Ascended and received &b%chips% Heavenly Chips&d!");
+            msgConfig.set("cookieclicker.msg_achievement", "&d&lAchievement Unlocked: &e%name%");
+
             InvGamesPlugin.getConfigManager().saveMessages(msgConfig, "messages");
         }
     }
@@ -160,13 +205,52 @@ public class CookieClicker extends Minigame {
                 double reqCookies = config.getDouble(path + "require.cookies", 0.0);
                 double reqCps = config.getDouble(path + "require.cps", 0.0);
                 double reqClick = config.getDouble(path + "require.click", 0.0);
+                String reqRebirth = config.getString(path + "require.rebirth", "");
 
                 boolean oneTime = config.getBoolean(path + "one_time", false);
 
                 String desc = config.getString(path + "description", "");
 
-                list.add(new Upgrade(name, mat, baseCost, costMult, cpsAdd, cpsMult, clickAdd, clickMult, reqCookies, reqCps, reqClick, oneTime, desc));
+                list.add(new Upgrade(key, name, mat, baseCost, costMult, cpsAdd, cpsMult, clickAdd, clickMult, reqCookies, reqCps, reqClick, reqRebirth, oneTime, desc));
             }
+        }
+        return list;
+    }
+
+    private List<RebirthUpgrade> loadRebirthUpgrades(FileConfiguration config, String sectionName) {
+        List<RebirthUpgrade> list = new ArrayList<>();
+        if (config.getConfigurationSection(sectionName) != null) {
+            for (String key : config.getConfigurationSection(sectionName).getKeys(false)) {
+                String path = sectionName + "." + key + ".";
+                String name = config.getString(path + "name", "Unknown Upgrade");
+                Material mat = Material.matchMaterial(config.getString(path + "material", "NETHER_STAR"));
+                if (mat == null) mat = Material.NETHER_STAR;
+                double cost = config.getDouble(path + "cost", 1.0);
+                
+                String cpsStr = config.getString(path + "cpsPerLevel", "*1.0");
+                double cpsMult = 1;
+                if (cpsStr.startsWith("*")) cpsMult = Double.parseDouble(cpsStr.substring(1));
+                
+                String clickStr = config.getString(path + "clickPerLevel", "*1.0");
+                double clickMult = 1;
+                if (clickStr.startsWith("*")) clickMult = Double.parseDouble(clickStr.substring(1));
+                
+                int slot = config.getInt(path + "slot", -1);
+                String desc = config.getString(path + "description", "");
+                
+                list.add(new RebirthUpgrade(key, name, mat, cost, cpsMult, clickMult, slot, desc));
+            }
+        } else {
+            // Default config for rebirth upgrades
+            config.set("rebirth-upgrades.heavenly_magic.name", "Heavenly Magic");
+            config.set("rebirth-upgrades.heavenly_magic.material", "NETHER_STAR");
+            config.set("rebirth-upgrades.heavenly_magic.cost", 1.0);
+            config.set("rebirth-upgrades.heavenly_magic.cpsPerLevel", "*1.5");
+            config.set("rebirth-upgrades.heavenly_magic.clickPerLevel", "*1.5");
+            config.set("rebirth-upgrades.heavenly_magic.slot", 22);
+            config.set("rebirth-upgrades.heavenly_magic.description", "Boosts CPS and Click by 50% permanently");
+            InvGamesPlugin.getConfigManager().saveGameConfig(config, "cookieclicker");
+            return loadRebirthUpgrades(config, sectionName);
         }
         return list;
     }
@@ -193,6 +277,12 @@ public class CookieClicker extends Minigame {
                 if (u.clickMult != 1) multClick *= Math.pow(u.clickMult, u.level);
             }
         }
+        for (RebirthUpgrade ru : rebirthUpgrades) {
+            if (ru.unlocked) {
+                multAuto *= ru.cpsMult;
+                multClick *= ru.clickMult;
+            }
+        }
 
         autoCookiesPerSecond = tempAuto * multAuto;
         clickMultiplier = tempClick * multClick;
@@ -204,7 +294,9 @@ public class CookieClicker extends Minigame {
             if (!a.unlocked && cookies >= a.reqCookies && autoCookiesPerSecond >= a.reqCps && clickMultiplier >= a.reqClick) {
                 a.unlocked = true;
                 renderNeeded = true;
-                player.sendMessage("§d§lAchievement Unlocked: §e" + ChatColor.translateAlternateColorCodes('&', a.name));
+                FileConfiguration msgConfig = InvGamesPlugin.getConfigManager().getMessages("messages");
+                String msgAch = msgConfig.getString("cookieclicker.msg_achievement", "&d&lAchievement Unlocked: &e%name%").replace("%name%", a.name);
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', msgAch));
                 try {
                     player.playSound(player.getLocation(), org.bukkit.Sound.valueOf(a.sound), 1.0f, 1.0f);
                 } catch (Exception ignored) {}
@@ -222,6 +314,7 @@ public class CookieClicker extends Minigame {
 
         if (saveManager.hasData(uuid, game)) {
             this.cookies = saveManager.getDouble(uuid, game, "cookies", 0);
+            this.heavenlyChips = saveManager.getDouble(uuid, game, "heavenlyChips", 0);
             for (int i = 0; i < upgrades.size(); i++) {
                 upgrades.get(i).level = saveManager.getInt(uuid, game, "upgrades." + i, 0);
             }
@@ -230,6 +323,9 @@ public class CookieClicker extends Minigame {
             }
             for (int i = 0; i < achievementsList.size(); i++) {
                 achievementsList.get(i).unlocked = saveManager.getInt(uuid, game, "achiev." + i, 0) == 1;
+            }
+            for (int i = 0; i < rebirthUpgrades.size(); i++) {
+                rebirthUpgrades.get(i).unlocked = saveManager.getInt(uuid, game, "rebirth." + rebirthUpgrades.get(i).id, 0) == 1;
             }
             long lastSaveTime = saveManager.getLong(uuid, game, "lastSaveTime", 0);
             calculateStats();
@@ -257,6 +353,7 @@ public class CookieClicker extends Minigame {
         String game = "cookieclicker";
 
         saveManager.set(uuid, game, "cookies", this.cookies);
+        saveManager.set(uuid, game, "heavenlyChips", this.heavenlyChips);
         for (int i = 0; i < upgrades.size(); i++) {
             saveManager.set(uuid, game, "upgrades." + i, upgrades.get(i).level);
         }
@@ -265,6 +362,9 @@ public class CookieClicker extends Minigame {
         }
         for (int i = 0; i < achievementsList.size(); i++) {
             saveManager.set(uuid, game, "achiev." + i, achievementsList.get(i).unlocked ? 1 : 0);
+        }
+        for (int i = 0; i < rebirthUpgrades.size(); i++) {
+            saveManager.set(uuid, game, "rebirth." + rebirthUpgrades.get(i).id, rebirthUpgrades.get(i).unlocked ? 1 : 0);
         }
         saveManager.set(uuid, game, "lastSaveTime", System.currentTimeMillis());
         saveManager.save();
@@ -307,6 +407,11 @@ public class CookieClicker extends Minigame {
                 return;
             } else if (slot == achievementsButtonSlot) {
                 menuState = MenuState.ACHIEVEMENTS;
+                currentAchPage = 0;
+                render();
+                return;
+            } else if (slot == rebirthButtonSlot) {
+                menuState = MenuState.REBIRTH;
                 render();
                 return;
             }
@@ -324,7 +429,8 @@ public class CookieClicker extends Minigame {
                 int row = 0;
                 for (int i = 0; i < activeList.size(); i++) {
                     Upgrade u = activeList.get(i);
-                    if (!u.isUnlocked(cookies, autoCookiesPerSecond, clickMultiplier)) continue;
+                    boolean hasRebirthReq = u.reqRebirth.isEmpty() || hasRebirthUpgrade(u.reqRebirth);
+                    if (!u.isUnlocked(cookies, autoCookiesPerSecond, clickMultiplier) || !hasRebirthReq) continue;
                     if (u.oneTime && u.level >= 1) continue;
 
                     int upgradeSlot = startSlot + row * 9 + col;
@@ -344,8 +450,71 @@ public class CookieClicker extends Minigame {
                         row++;
                     }
                 }
+            } else if (menuState == MenuState.ACHIEVEMENTS) {
+                if (slot == prevPageButtonSlot && currentAchPage > 0) {
+                    currentAchPage--;
+                    render();
+                } else if (slot == nextPageButtonSlot && achievementsList.size() > (currentAchPage + 1) * 21) {
+                    currentAchPage++;
+                    render();
+                }
+            } else if (menuState == MenuState.REBIRTH) {
+                if (slot == 4) { // Rebirth button slot
+                    doRebirth();
+                    render();
+                    return;
+                }
+                for (RebirthUpgrade ru : rebirthUpgrades) {
+                    if (ru.slot >= 0 && slot == ru.slot) {
+                        if (!ru.unlocked && heavenlyChips >= ru.cost) {
+                            heavenlyChips -= ru.cost;
+                            ru.unlocked = true;
+                            calculateStats();
+                            render();
+                        }
+                        break;
+                    }
+                }
             }
         }
+    }
+
+    private void doRebirth() {
+        double chipsToGet = calculatePendingChips();
+        if (chipsToGet >= 1) {
+            heavenlyChips += chipsToGet;
+            cookies = 0;
+            for (Upgrade u : upgrades) u.level = 0;
+            for (Upgrade u : oneTimeUpgrades) u.level = 0;
+            calculateStats();
+            FileConfiguration msgConfig = InvGamesPlugin.getConfigManager().getMessages("messages");
+            String msgAsc = msgConfig.getString("cookieclicker.msg_ascended", "&dYou Ascended and received &b%chips% Heavenly Chips&d!").replace("%chips%", String.valueOf((long)chipsToGet));
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', msgAsc));
+        }
+    }
+
+    private double calculatePendingChips() {
+        double tempCookies = cookies;
+        double currentK = heavenlyChips;
+        double pending = 0;
+        while (true) {
+            double cost = 1_000_000_000_000.0 * (3 * currentK * currentK + 3 * currentK + 1);
+            if (tempCookies >= cost) {
+                tempCookies -= cost;
+                currentK++;
+                pending++;
+            } else {
+                break;
+            }
+        }
+        return pending;
+    }
+
+    private boolean hasRebirthUpgrade(String id) {
+        for (RebirthUpgrade ru : rebirthUpgrades) {
+            if (ru.id.equals(id)) return ru.unlocked;
+        }
+        return false;
     }
 
     @Override
@@ -368,6 +537,12 @@ public class CookieClicker extends Minigame {
 
         FileConfiguration msgConfig = InvGamesPlugin.getConfigManager().getMessages("messages");
 
+        String strCookies = ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.stats_cookies", "&fCookies: &e%cookies%").replace("%cookies%", String.valueOf((long)cookies)));
+        String strClick = ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.stats_click", "&fCookies per click: &e%click%").replace("%click%", String.format(java.util.Locale.US, "%.1f", clickMultiplier)));
+        String strCps = ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.stats_cps", "&fCookies per second: &e%cps%").replace("%cps%", String.format(java.util.Locale.US, "%.1f", autoCookiesPerSecond)));
+        String strReturn = ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.lore_return", "&7Return to game"));
+        String backName = ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.back", "&c&lBack"));
+
         if (menuState == MenuState.MAIN) {
             // Render main cookie
             String cookieName = ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.cookie_name", "&6&lThe Ultimate Cookie"));
@@ -375,9 +550,9 @@ public class CookieClicker extends Minigame {
             ItemMeta meta = cookie.getItemMeta();
             if (meta != null) {
                 List<String> lore = new ArrayList<>();
-                lore.add("§fCookies: §e" + (int) cookies);
-                lore.add("§fCookies per click: §e" + clickMultiplier);
-                lore.add("§fCookies per second: §e" + autoCookiesPerSecond);
+                lore.add(strCookies);
+                lore.add(strClick);
+                lore.add(strCps);
                 meta.setLore(lore);
                 cookie.setItemMeta(meta);
             }
@@ -385,37 +560,62 @@ public class CookieClicker extends Minigame {
 
             // Render buttons
             String shopName = ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.upgrades_shop", "&e&lUpgrades Shop"));
-            inventory.setItem(upgradesButtonSlot, createItem(Material.ANVIL, shopName, List.of("§7Click to open upgrades")));
+            String shopLore = ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.lore_upgrades", "&7Click to open upgrades"));
+            inventory.setItem(upgradesButtonSlot, createItem(Material.ANVIL, shopName, List.of(shopLore)));
 
             if (oneTimeButtonSlot > 0) {
                 String oneTimeName = ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.one_time_shop", "&b&lOne-Time Upgrades"));
-                inventory.setItem(oneTimeButtonSlot, createItem(Material.DIAMOND_PICKAXE, oneTimeName, List.of("§7Special rare upgrades")));
+                String oneTimeLore = ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.lore_one_time", "&7Special rare upgrades"));
+                inventory.setItem(oneTimeButtonSlot, createItem(Material.DIAMOND_PICKAXE, oneTimeName, List.of(oneTimeLore)));
             }
             if (achievementsButtonSlot > 0) {
                 String achName = ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.achievements", "&d&lAchievements"));
-                inventory.setItem(achievementsButtonSlot, createItem(Material.EMERALD, achName, List.of("§7View your progress")));
+                String achLore = ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.lore_achievements", "&7View your progress"));
+                inventory.setItem(achievementsButtonSlot, createItem(Material.EMERALD, achName, List.of(achLore)));
+            }
+            if (rebirthButtonSlot > 0) {
+                String rbName = ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.rebirth", "&5&lRebirth Menu"));
+                String rbLore1 = ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.lore_rebirth_1", "&7Ascend and unlock heavenly magic"));
+                String rbLore2 = ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.lore_rebirth_2", "&bChips: %chips%").replace("%chips%", String.valueOf((long)heavenlyChips)));
+                inventory.setItem(rebirthButtonSlot, createItem(Material.NETHER_STAR, rbName, List.of(rbLore1, rbLore2)));
             }
 
         } else if (menuState == MenuState.ACHIEVEMENTS) {
-            String backName = ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.back", "&c&lBack"));
-            inventory.setItem(backButtonSlot, createItem(Material.ARROW, backName, List.of("§7Return to game")));
-            inventory.setItem(4, createItem(Material.COOKIE, "§fCookies: §e" + (int) cookies));
+            inventory.setItem(backButtonSlot, createItem(Material.ARROW, backName, List.of(strReturn)));
+            inventory.setItem(4, createItem(Material.COOKIE, strCookies));
+
+            int itemsPerPage = 21;
+            int startIndex = currentAchPage * itemsPerPage;
+            int endIndex = Math.min(startIndex + itemsPerPage, achievementsList.size());
+
+            if (currentAchPage > 0) {
+                String prevName = ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.prev_page", "&e&lPrevious Page"));
+                inventory.setItem(prevPageButtonSlot, createItem(Material.ARROW, prevName));
+            }
+            if (achievementsList.size() > endIndex) {
+                String nextName = ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.next_page", "&e&lNext Page"));
+                inventory.setItem(nextPageButtonSlot, createItem(Material.ARROW, nextName));
+            }
 
             int startSlot = 10;
             int col = 0;
             int row = 0;
-            for (Achievement a : achievementsList) {
+            for (int i = startIndex; i < endIndex; i++) {
+                Achievement a = achievementsList.get(i);
                 Material mat = a.unlocked ? a.material : Material.BARRIER;
-                String display = a.unlocked ? "§a" + a.name : "§c" + a.name + " §7(Locked)";
+                String dnUnlocked = ChatColor.translateAlternateColorCodes('&', "&a" + a.name);
+                String dnLockedRaw = ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.lore_locked", "&c%name% &7(Locked)").replace("%name%", a.name));
+                String display = a.unlocked ? dnUnlocked : dnLockedRaw;
+
                 List<String> lore = new ArrayList<>();
                 lore.add("§7" + a.description);
                 lore.add("");
                 if (!a.unlocked) {
-                    if (a.reqCookies > 0) lore.add("§eRequires Cookies: " + a.reqCookies);
-                    if (a.reqCps > 0) lore.add("§eRequires CPS: " + a.reqCps);
-                    if (a.reqClick > 0) lore.add("§eRequires Click: " + a.reqClick);
+                    if (a.reqCookies > 0) lore.add(ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.req_cookies", "&eRequires Cookies: %req%").replace("%req%", String.valueOf(a.reqCookies))));
+                    if (a.reqCps > 0) lore.add(ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.req_cps", "&eRequires CPS: %req%").replace("%req%", String.valueOf(a.reqCps))));
+                    if (a.reqClick > 0) lore.add(ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.req_click", "&eRequires Click: %req%").replace("%req%", String.valueOf(a.reqClick))));
                 } else {
-                    lore.add("§a§lUNLOCKED");
+                    lore.add(ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.achievement_unlocked", "&a&lUNLOCKED")));
                 }
 
                 inventory.setItem(startSlot + row * 9 + col, createItem(mat, display, lore));
@@ -425,33 +625,68 @@ public class CookieClicker extends Minigame {
                     row++;
                 }
             }
+        } else if (menuState == MenuState.REBIRTH) {
+            inventory.setItem(backButtonSlot, createItem(Material.ARROW, backName, List.of(strReturn)));
+
+            String chipStats = ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.stats_chips", "&bHeavenly Chips: &f%chips%").replace("%chips%", String.valueOf((long)heavenlyChips)));
+            inventory.setItem(0, createItem(Material.NETHER_STAR, chipStats));
+
+            double pending = calculatePendingChips();
+            String doReb = ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.do_rebirth", "&d&lAscend!"));
+            List<String> rLore = new ArrayList<>();
+            rLore.add(ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.lore_ascend_1", "&7Forfeit your cookies to ascend.")));
+            rLore.add(ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.lore_ascend_2", "&bPending Chips: &f%chips%").replace("%chips%", String.valueOf((long)pending))));
+            rLore.add(ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.lore_ascend_3", "&eCurrent Cookies: %cookies%").replace("%cookies%", String.valueOf((long)cookies))));
+            inventory.setItem(4, createItem(Material.ENDER_EYE, doReb, rLore));
+
+            for (RebirthUpgrade ru : rebirthUpgrades) {
+                if (ru.slot >= 0) {
+                    Material mat = ru.unlocked ? ru.material : Material.BARRIER;
+                    String dn = ChatColor.translateAlternateColorCodes('&', (ru.unlocked ? "&a" : "&c") + ru.name);
+                    List<String> rl = new ArrayList<>();
+                    rl.add("§7" + ru.description);
+                    rl.add("");
+                    if (ru.unlocked) {
+                        rl.add(ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.rebirth_purchased", "&a&lPURCHASED")));
+                    } else {
+                        String costStr = String.valueOf(ru.cost);
+                        if (heavenlyChips >= ru.cost) {
+                            rl.add(ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.rebirth_cost_afford", "&eCost: %cost% Chips").replace("%cost%", costStr)));
+                        } else {
+                            rl.add(ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.rebirth_cost_deny", "&cCost: %cost% Chips").replace("%cost%", costStr)));
+                        }
+                    }
+                    inventory.setItem(ru.slot, createItem(mat, dn, rl));
+                }
+            }
         } else {
-            // Render back button
-            String backName = ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.back", "&c&lBack"));
-            inventory.setItem(backButtonSlot, createItem(Material.ARROW, backName, List.of("§7Return to game")));
+            inventory.setItem(backButtonSlot, createItem(Material.ARROW, backName, List.of(strReturn)));
+            inventory.setItem(4, createItem(Material.COOKIE, strCookies));
 
-            // Render cookie info display
-            inventory.setItem(4, createItem(Material.COOKIE, "§fCookies: §e" + (int) cookies));
-
-            // Render upgrades
             List<Upgrade> activeList = menuState == MenuState.UPGRADES ? upgrades : oneTimeUpgrades;
             int startSlot = 10;
             int col = 0;
             int row = 0;
             for (Upgrade u : activeList) {
-                if (!u.isUnlocked(cookies, autoCookiesPerSecond, clickMultiplier)) continue;
+                boolean hasRebirthReq = u.reqRebirth.isEmpty() || hasRebirthUpgrade(u.reqRebirth);
+                if (!u.isUnlocked(cookies, autoCookiesPerSecond, clickMultiplier) || !hasRebirthReq) continue;
                 if (u.oneTime && u.level >= 1) continue;
 
                 int currentCost = u.getCurrentCost();
                 boolean canAfford = cookies >= currentCost;
 
-                ItemStack item = createItem(u.material, "§a" + u.name + " §7(Level " + u.level + ")");
+                String upName = ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.upgrade_level", "&a%name% &7(Level %level%)").replace("%name%", u.name).replace("%level%", String.valueOf(u.level)));
+                ItemStack item = createItem(u.material, upName);
                 ItemMeta uMeta = item.getItemMeta();
                 if (uMeta != null) {
                     List<String> lore = new ArrayList<>();
                     lore.add("§7" + u.description);
                     lore.add("");
-                    lore.add(canAfford ? "§eCost: " + currentCost : "§cCost: " + currentCost + " §4(Too expensive)");
+                    if (canAfford) {
+                        lore.add(ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.upgrade_cost_afford", "&eCost: %cost%").replace("%cost%", String.valueOf(currentCost))));
+                    } else {
+                        lore.add(ChatColor.translateAlternateColorCodes('&', msgConfig.getString("cookieclicker.upgrade_cost_deny", "&cCost: %cost% &4(Too expensive)").replace("%cost%", String.valueOf(currentCost))));
+                    }
                     uMeta.setLore(lore);
                     item.setItemMeta(uMeta);
                 }
@@ -483,7 +718,31 @@ public class CookieClicker extends Minigame {
         return item;
     }
 
+    private static class RebirthUpgrade {
+        String id;
+        String name;
+        Material material;
+        double cost;
+        double cpsMult;
+        double clickMult;
+        int slot;
+        String description;
+        boolean unlocked = false;
+
+        public RebirthUpgrade(String id, String name, Material material, double cost, double cpsMult, double clickMult, int slot, String description) {
+            this.id = id;
+            this.name = name;
+            this.material = material;
+            this.cost = cost;
+            this.cpsMult = cpsMult;
+            this.clickMult = clickMult;
+            this.slot = slot;
+            this.description = description;
+        }
+    }
+
     private static class Upgrade {
+        String id;
         String name;
         Material material;
         double baseCost;
@@ -496,12 +755,14 @@ public class CookieClicker extends Minigame {
         double reqCookies;
         double reqCps;
         double reqClick;
+        String reqRebirth;
         boolean oneTime;
         String description;
 
-        public Upgrade(String name, Material material, double baseCost, double costMultiplier,
+        public Upgrade(String id, String name, Material material, double baseCost, double costMultiplier,
                        double cpsAdd, double cpsMult, double clickAdd, double clickMult,
-                       double reqCookies, double reqCps, double reqClick, boolean oneTime, String description) {
+                       double reqCookies, double reqCps, double reqClick, String reqRebirth, boolean oneTime, String description) {
+            this.id = id;
             this.name = name;
             this.material = material;
             this.baseCost = baseCost;
@@ -513,6 +774,7 @@ public class CookieClicker extends Minigame {
             this.reqCookies = reqCookies;
             this.reqCps = reqCps;
             this.reqClick = reqClick;
+            this.reqRebirth = reqRebirth;
             this.oneTime = oneTime;
             this.description = description;
         }
