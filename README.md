@@ -1,6 +1,7 @@
 # InvGame
 
-InvGame je všestranný Minecraft plugin, který poskytuje minihry založené na GUI přímo uvnitř inventářů. Nabízí ukládání dat pomocí SQL i lokálních YAML souborů, plně dynamické překlady, a přizpůsobitelné herní systémy.
+InvGame je všestranný Minecraft plugin, který poskytuje minihry založené na GUI přímo uvnitř inventářů.
+Nabízí ukládání dat pomocí SQL i lokálních YAML souborů, plně dynamické překlady, a přizpůsobitelné herní systémy.
 
 ## Obecná konfigurace
 
@@ -76,7 +77,8 @@ upgrades:
 ```
 
 ### Jednorázová Vylepšení (`one-time-upgrades:`)
-Fungují naprosto stejně jako klasická vylepšení, avšak disponují limitem povolujícím pouze unikátní koupi s jedním použitím v relaci. Z tohoto důvodu nepoužívají po zakoupení logiku `costMultiplier`.
+Fungují naprosto stejně jako klasická vylepšení, avšak disponují limitem povolujícím pouze unikátní koupi s jedním použitím v relaci.
+Z tohoto důvodu nepoužívají po zakoupení logiku `costMultiplier`.
 
 ```yaml
   carpal_tunnel:
@@ -92,7 +94,8 @@ Fungují naprosto stejně jako klasická vylepšení, avšak disponují limitem 
 ```
 
 ### Úspěchy (`achievements:`)
-Odemknou se ve chvíli, kdy vnitřní systém zaznamená dosažení milníku podle atributu `require`. Můžete definovat zvuk přímo ke každému úspěchu na klíči `sound`. Stránkování GUI je plně dynamické a v případě velkého seznamu úspěchů nativně vytváří další strany.
+Odemknou se ve chvíli, kdy vnitřní systém zaznamená dosažení milníku podle atributu `require`. Můžete definovat zvuk přímo ke každému úspěchu na klíči `sound`.
+Stránkování GUI je plně dynamické a v případě velkého seznamu úspěchů nativně vytváří další strany.
 
 ```yaml
 achievements:
@@ -105,7 +108,8 @@ achievements:
 ```
 
 ### Znovuzrození & Prestiž Vylepšení (`rebirth-upgrades:`)
-Strom permanentních dovedností, jenž zpřístupní Ascension mechanismus (Znovuzrození / Povznesení). Vycení se pomocí speciální komodity `Heavenly Chips` ("Nebeské Čipy"), jejíž produkce se kalkuluje dynamicky ze sebraných sušenek: `10^12 * (3K^2 + 3K + 1)`.
+Strom permanentních dovedností, jenž zpřístupní Ascension mechanismus (Znovuzrození / Povznesení).<br>
+Vycení se pomocí speciální komodity `Heavenly Chips` ("Nebeské Čipy"), jejíž produkce se kalkuluje dynamicky ze sebraných sušenek: `10^12 * (3K^2 + 3K + 1)` (`K` znamená kolik Heavenly Chips už máš).
 
 Z důvodu vykreslování vylepšení prestiže v inventáři jako jakéhosi "stromu dovedností" konfigurace nuceně vyžaduje index vlastnosti (`slot`), kterým zafixuje mapování sušenek do přesného umístění.
 
