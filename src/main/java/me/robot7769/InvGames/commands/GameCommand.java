@@ -36,7 +36,14 @@ public class GameCommand implements CommandExecutor, TabCompleter {
             msgConfig.set("system.no_permission", "&cYou do not have permission to use this command.");
             msgConfig.set("system.player_only", "&cTento prikaz muze pouzit jen hrac.");
             msgConfig.set("system.already_playing", "&cUz hrajete jinou minihru. Nejdriv ji ukoncete zavrenim inventare.");
-            msgConfig.set("system.usage", "&cPouziti: /game <nazev_hry|reload>");
+            msgConfig.set("system.usage",
+                    "&c&b┍━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┑\n" +
+                    "│INV GAME Použití                │\n" +
+                    "┝━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┥\n" +
+                    "│/game <hra>   &6- Zapne danou hru&b │\n" +
+                    "│/game reload  &6- Načte config&b    │\n" +
+                    "┕━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┙"
+            );
             msgConfig.set("system.reloaded", "&aInvGames configuration successfully reloaded.");
             msgConfig.set("system.unknown_game", "&cNeznama hra: %game%");
             msgConfig.set("system.starting", "&aSpoustim hru %game%.");

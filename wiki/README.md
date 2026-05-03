@@ -3,19 +3,6 @@
 InvGame je všestranný Minecraft plugin, který poskytuje minihry založené na GUI přímo uvnitř inventářů.
 Nabízí ukládání dat pomocí SQL i lokálních YAML souborů, plně dynamické překlady, a přizpůsobitelné herní systémy.
 
-## Funkce
-- Minihry v inventáři (Cookie Clicker, Snake, Tetris, Slot Machine).
-- Podpora SQL a YAML pro ukládání dat.
-- Plně konfigurovatelné zprávy a herní nastavení.
-- Offline progres pro idle hry.
-
-## Příkazy
-- `/ig start <hra>` - Spustí vybranou minihru.
-
-## Konfigurace her
-Každá minihra má svůj vlastní konfigurační soubor ve složce `games/`. Podrobné informace o konfiguraci jednotlivých her naleznete v samostatných dokumentech:
-- [Cookie Clicker Konfigurace](COOKIECLICKER_CONFIG.md)
-
 ## Obecná konfigurace
 
 ### `config.yml`

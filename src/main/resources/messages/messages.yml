@@ -2,7 +2,12 @@ system:
   no_permission: "&cNemáš pravo na použití tohoto příkazu."
   player_only: "&cTento prikaz muže použít jen hrač."
   already_playing: "&cUž hrajete jinou minihru. Nejdřiv ji ukončete zavřením inventáře."
-  usage: "&cPoužití: /game <nazev_hry|reload>"
+  usage: "&b┍━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┑
+            │INV GAME Použití                │
+            ┝━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┥
+            │/game <hra>   &6- Zapne danou hru&b │
+            │/game reload  &6- Načte config&b    │
+            ┕━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┙"
   reloaded: "&aInvGames configurace byla úspěšně načtena."
   unknown_game: "&cNeznámá hra: %game%"
   starting: "&aSpouštím hru %game%."
@@ -31,6 +36,7 @@ cookieclicker:
   req_cookies: "&ePožaduje Sušenek: %req%"
   req_cps: "&ePožaduje CPS: %req%"
   req_click: "&ePožaduje Klik: %req%"
+  req_clicked: "&ePožaduje Kliknutí: %req%"
   achievement_unlocked: "&a&lODEMČENO"
   prev_page: "&e&lPředchozí Strana"
   next_page: "&e&lDalší Strana"
@@ -45,4 +51,6 @@ cookieclicker:
   upgrade_cost_deny: "&cCena: %cost% &4(Příliš drahé)"
   msg_ascended: "&dPovznesl/a ses a získal/a jsi &b%chips% Heavenly Chips&d!"
   msg_achievement: "&d&lÚspěch Odemčen: &e%name%"
-
+  buy_amount: "&eKoupit %amount%"
+  buy_all: "&eKoupit Vše"
+  buy_all_lore: "&7Koupit všechno dostupné"
