@@ -1,0 +1,808 @@
+# ======================================================
+# Cookie Clicker Configuration
+# ======================================================
+# inventory_size: Velikost inventáře (násobky 9, max 54)
+# slots: Definice slotů pro tlačítka v menu
+# formating: Nastavení formátování velkých čísel
+#   - decimal_places: Počet desetinných míst
+#   - thousand, million, etc: Přípony pro dané řády
+#
+# upgrades / one-time-upgrades:
+#   - baseCost: Základní cena
+#   - costMultiplier: O kolik se zvýší cena s každou úrovní
+#   - cpsPerLevel: Bonus k produkci za sekundu (+1.0 pro přičtení, *1.1 pro násobení)
+#   - clickPerLevel: Bonus k produkci za klik (+1.0 pro přičtení, *1.1 pro násobení)
+#   - require: Podmínky pro odemčení (zobrazení v obchodě)
+#     - cookies: Potřebný počet sušenek
+#     - cps: Potřebná produkce za sekundu
+#     - cpc: Potřebný výdělek za klik
+#     - clicked: Celkový počet kliknutí na sušenku
+#     - rebirth: ID rebirth vylepšení, které musí být koupeno
+#
+# achievements:
+#   - require: Stejné jako u vylepšení
+#
+# rebirth-upgrades:
+#   - cost: Cena v Heavenly Chips
+#   - require_rebirth: ID jiného rebirth vylepšení, které musí být koupeno jako prerekvizita
+# ======================================================
+
+inventory_size: 45
+
+slots:
+  cookie: 22
+  upgrades_button: 26
+  rebirth_button: 40
+  achievements_button: 18
+  one_time_button: 17
+  back_button: 36
+  prev_page_button: 39
+  next_page_button: 41
+  buy_all_one_time: 44
+  purchase_toggle: 44
+
+formating:
+  enabled: true
+  decimal_places: 2
+  thousand: "K"
+  million: "M"
+  billion: "B"
+  trillion: "T"
+  quadrillion: "Qa"
+  quintillion: "Qi"
+  sextillion: "Sx"
+  septillion: "Sp"
+  octillion: "Oc"
+  nonillion: "No"
+  decillion: "Dc"
+
+upgrades:
+  cursor:
+    name: "Kurzor"
+    material: "WOODEN_PICKAXE"
+    baseCost: 15.0
+    costMultiplier: 1.15
+    cpsPerLevel: "+0.1"
+    clickPerLevel: "+0.5"
+    require:
+      cookies: 0
+      cps: 0.0
+      cpc: 0.0
+      clicked: 0.0
+    description: "Zvyšuje počet cookies za kliknutí."
+  grandma:
+    name: "Babička"
+    material: "WHEAT"
+    baseCost: 100.0
+    costMultiplier: 1.15
+    cpsPerLevel: "+1.0"
+    clickPerLevel: "+0.0"
+    require:
+      cookies: 10.0
+      cps: 0.0
+      cpc: 0.0
+      clicked: 0.0
+    description: "Peče cookies pasivně."
+  farm:
+    name: "Farma"
+    material: "DIRT"
+    baseCost: 1100.0
+    costMultiplier: 1.15
+    cpsPerLevel: "+8.0"
+    clickPerLevel: "+0.0"
+    require:
+      cookies: 500.0
+      cps: 0.0
+      cpc: 0.0
+      clicked: 0.0
+    description: "Pěstuje sušenkové rostliny."
+  mine:
+    name: "Důl"
+    material: "STONE_PICKAXE"
+    baseCost: 12000.0
+    costMultiplier: 1.15
+    cpsPerLevel: "+47.0"
+    clickPerLevel: "+0.0"
+    require:
+      cookies: 5000.0
+      cps: 0.0
+      cpc: 0.0
+      clicked: 0.0
+    description: "Těží sušenkové těsto."
+  factory:
+    name: "Továrna"
+    material: "IRON_BLOCK"
+    baseCost: 130000.0
+    costMultiplier: 1.15
+    cpsPerLevel: "+260.0"
+    clickPerLevel: "+0.0"
+    require:
+      cookies: 50000.0
+      cps: 0.0
+      cpc: 0.0
+      clicked: 0.0
+    description: "Produkuje velké množství cookies."
+  bank:
+    name: "Banka"
+    material: "GOLD_BLOCK"
+    baseCost: 1400000.0
+    costMultiplier: 1.15
+    cpsPerLevel: "+1400.0"
+    clickPerLevel: "+0.0"
+    require:
+      cookies: 500000.0
+      cps: 0.0
+      cpc: 0.0
+      clicked: 0.0
+    description: "Generuje cookies z úroků."
+  temple:
+    name: "Chrám"
+    material: "CHISELED_QUARTZ_BLOCK"
+    baseCost: 20000000.0
+    costMultiplier: 1.15
+    cpsPerLevel: "+7800.0"
+    clickPerLevel: "+0.0"
+    require:
+      cookies: 5000000.0
+      cps: 0.0
+      cpc: 0.0
+      clicked: 0.0
+    description: "Plný vzácné, starověké čokolády."
+  wizard_tower:
+    name: "Čarodějná věž"
+    material: "ENCHANTING_TABLE"
+    baseCost: 330000000.0
+    costMultiplier: 1.15
+    cpsPerLevel: "+44000.0"
+    clickPerLevel: "+0.0"
+    require:
+      cookies: 100000000.0
+      cps: 0.0
+      cpc: 0.0
+      clicked: 0.0
+    description: "Vyvolává cookies pomocí magie."
+  shipment:
+    name: "Zásilka"
+    material: "FIREWORK_ROCKET"
+    baseCost: 5100000000.0
+    costMultiplier: 1.15
+    cpsPerLevel: "+260000.0"
+    clickPerLevel: "+0.0"
+    require:
+      cookies: 1000000000.0
+      cps: 0.0
+      cpc: 0.0
+      clicked: 0.0
+    description: "Přiváží cookies ze sušenkové planety."
+  alchemy_lab:
+    name: "Alchymistická laboratoř"
+    material: "BREWING_STAND"
+    baseCost: 75000000000.0
+    costMultiplier: 1.15
+    cpsPerLevel: "+1600000.0"
+    clickPerLevel: "+0.0"
+    require:
+      cookies: 10000000000.0
+      cps: 0.0
+      cpc: 0.0
+      clicked: 0.0
+    description: "Přeměňuje zlato na cookies."
+  portal:
+    name: "Portál"
+    material: "OBSIDIAN"
+    baseCost: 1000000000000.0
+    costMultiplier: 1.15
+    cpsPerLevel: "+10000000.0"
+    clickPerLevel: "+0.0"
+    require:
+      cookies: 500000000000.0
+      cps: 0.0
+      cpc: 0.0
+      clicked: 0.0
+    description: "Otevírá dveře do sušenkového vesmíru."
+  time_machine:
+    name: "Stroj času"
+    material: "CLOCK"
+    baseCost: 14000000000000.0
+    costMultiplier: 1.15
+    cpsPerLevel: "+65000000.0"
+    clickPerLevel: "+0.0"
+    require:
+      cookies: 5000000000000.0
+      cps: 0.0
+      cpc: 0.0
+      clicked: 0.0
+    description: "Přiváží cookies z minulosti."
+  antimatter_condenser:
+    name: "Antihmotový kondenzátor"
+    material: "END_CRYSTAL"
+    baseCost: 170000000000000.0
+    costMultiplier: 1.15
+    cpsPerLevel: "+430000000.0"
+    clickPerLevel: "+0.0"
+    require:
+      cookies: 50000000000000.0
+      cps: 0.0
+      cpc: 0.0
+      clicked: 0.0
+    description: "Kondenzuje antihmotu na cookies."
+  prism:
+    name: "Hranol"
+    material: "PRISMARINE_CRYSTALS"
+    baseCost: 2100000000000000.0
+    costMultiplier: 1.15
+    cpsPerLevel: "+2900000000.0"
+    clickPerLevel: "+0.0"
+    require:
+      cookies: 1000000000000000.0
+      cps: 0.0
+      cpc: 0.0
+      clicked: 0.0
+    description: "Přeměňuje samotné světlo na cookies."
+  chancemaker:
+    name: "Stroj na štěstí"
+    material: "TOTEM_OF_UNDYING"
+    baseCost: 26000000000000000.0
+    costMultiplier: 1.15
+    cpsPerLevel: "+21000000000.0"
+    clickPerLevel: "+0.0"
+    require: {cookies: 1.0e+16, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    description: "Generuje sušenky z čistého štěstí."
+  fractal_engine:
+    name: "Fraktální motor"
+    material: "REPEATING_COMMAND_BLOCK"
+    baseCost: 310000000000000000.0
+    costMultiplier: 1.15
+    cpsPerLevel: "+150000000000.0"
+    clickPerLevel: "+0.0"
+    require: {cookies: 1.0e+17, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    description: "Peče sušenky, které se skládají ze sušenek."
+  javascript_console:
+    name: "Javascriptová konzole"
+    material: "COMMAND_BLOCK"
+    baseCost: 7100000000000000000.0
+    costMultiplier: 1.15
+    cpsPerLevel: "+1100000000000.0"
+    clickPerLevel: "+0.0"
+    require: {cookies: 1.0e+18, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    description: "Vytváří sušenky přímo v kódu vesmíru."
+  idleverse:
+    name: "Idleverse"
+    material: "END_PORTAL_FRAME"
+    baseCost: 1.2e+20
+    costMultiplier: 1.15
+    cpsPerLevel: "+8300000000000.0"
+    clickPerLevel: "+0.0"
+    require: {cookies: 1.0e+19, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    description: "Cizí světy, kde se sušenky pečou samy."
+  cortex_baker:
+    name: "Mozkový pekař"
+    material: "BRAIN_CORAL_BLOCK"
+    baseCost: 1.9e+21
+    costMultiplier: 1.15
+    cpsPerLevel: "+64000000000000.0"
+    clickPerLevel: "+0.0"
+    require: {cookies: 1.0e+20, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    description: "Vymýšlí sušenky do existence."
+  you:
+    name: "Ty"
+    material: "PLAYER_HEAD"
+    baseCost: 5.4e+22
+    costMultiplier: 1.15
+    cpsPerLevel: "+510000000000000.0"
+    clickPerLevel: "+0.0"
+    require: {cookies: 1.0e+21, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    description: "Protože jsi nejlepší pekař na světě."
+
+one-time-upgrades:
+  # --- CURSOR UPGRADES ---
+  reinforced_index:
+    name: "Zesílený ukazováček"
+    material: "IRON_PICKAXE"
+    baseCost: 100.0
+    costMultiplier: 1.0
+    cpsPerLevel: "+0.0"
+    clickPerLevel: "*2.0"
+    require: {cookies: 0.0, cps: 0.0, cpc: 1.0, clicked: 0.0}
+    one_time: true
+    description: "Myši a kurzory jsou dvakrát efektivnější."
+  carpal_tunnel:
+    name: "Krém proti karpálnímu tunelu"
+    material: "BOWL"
+    baseCost: 500.0
+    costMultiplier: 1.0
+    cpsPerLevel: "+0.0"
+    clickPerLevel: "*2.0"
+    require: {cookies: 0.0, cps: 0.0, cpc: 10.0, clicked: 0.0}
+    one_time: true
+    description: "Myši a kurzory jsou dvakrát efektivnější."
+  ambidextrous:
+    name: "Ambidextrie"
+    material: "PLAYER_HEAD"
+    baseCost: 10000.0
+    costMultiplier: 1.0
+    cpsPerLevel: "+0.0"
+    clickPerLevel: "*2.0"
+    require: {cookies: 0.0, cps: 0.0, cpc: 100.0, clicked: 0.0}
+    one_time: true
+    description: "Myši a kurzory jsou dvakrát efektivnější."
+
+  # --- GRANDMA UPGRADES ---
+  forwards_from_grandma:
+    name: "Přeposlané maily od babičky"
+    material: "PAPER"
+    baseCost: 1000.0
+    costMultiplier: 1.0
+    cpsPerLevel: "*2.0"
+    clickPerLevel: "+0.0"
+    require: {cookies: 500.0, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    one_time: true
+    description: "Babičky jsou dvakrát efektivnější."
+  steel_plated_rolling_pins:
+    name: "Ocelové válečky"
+    material: "IRON_INGOT"
+    baseCost: 5000.0
+    costMultiplier: 1.0
+    cpsPerLevel: "*2.0"
+    clickPerLevel: "+0.0"
+    require: {cookies: 2500.0, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    one_time: true
+    description: "Babičky jsou dvakrát efektivnější."
+
+  # --- FARM UPGRADES ---
+  cheap_hoes:
+    name: "Levné motyky"
+    material: "WOODEN_HOE"
+    baseCost: 11000.0
+    costMultiplier: 1.0
+    cpsPerLevel: "*2.0"
+    clickPerLevel: "+0.0"
+    require: {cookies: 5500.0, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    one_time: true
+    description: "Farmy jsou dvakrát efektivnější."
+  fertilizer:
+    name: "Hnojivo"
+    material: "BONE_MEAL"
+    baseCost: 55000.0
+    costMultiplier: 1.0
+    cpsPerLevel: "*2.0"
+    clickPerLevel: "+0.0"
+    require: {cookies: 27500.0, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    one_time: true
+    description: "Farmy jsou dvakrát efektivnější."
+
+  # --- MINE UPGRADES ---
+  sugar_coated_picks:
+    name: "Krumpáče s cukrovým povlakem"
+    material: "GOLDEN_PICKAXE"
+    baseCost: 120000.0
+    costMultiplier: 1.0
+    cpsPerLevel: "*2.0"
+    require_rebirth: ""
+    clickPerLevel: "+0.0"
+    require: {cookies: 60000.0, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    one_time: true
+    description: "Doly jsou dvakrát efektivnější."
+
+  # --- COOKIE UPGRADES (Global Multipliers) ---
+  plain_cookies:
+    name: "Obyčejné sušenky"
+    material: "COOKIE"
+    baseCost: 50000.0
+    costMultiplier: 1.0
+    cpsPerLevel: "*1.01"
+    clickPerLevel: "+0.0"
+    require:
+      cookies: 50000.0
+      cps: 0.0
+      cpc: 0.0
+      clicked: 0.0
+    one_time: true
+    description: "Zvyšuje produkci sušenek o 1 %."
+  sugar_cookies:
+    name: "Cukrové sušenky"
+    material: "SUGAR"
+    baseCost: 100000.0
+    costMultiplier: 1.0
+    cpsPerLevel: "*1.01"
+    clickPerLevel: "+0.0"
+    require:
+      cookies: 100000.0
+      cps: 0.0
+      cpc: 0.0
+      clicked: 0.0
+    one_time: true
+    description: "Zvyšuje produkci sušenek o 1 %."
+  oatmeal_cookies:
+    name: "Ovesné sušenky"
+    material: "WHEAT"
+    baseCost: 500000.0
+    costMultiplier: 1.0
+    cpsPerLevel: "*1.05"
+    clickPerLevel: "+0.0"
+    require:
+      cookies: 500000.0
+      cps: 0.0
+      cpc: 0.0
+      clicked: 0.0
+    one_time: true
+    description: "Zvyšuje produkci sušenek o 5 %."
+
+achievements:
+  # --- CELKOVÁ PRODUKCE (Baking Milestones) ---
+  wake_and_bake:
+    name: "Probuď se a peč"
+    material: "COOKIE"
+    require: {cookies: 1.0, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    description: "Upečte svou úplně první sušenku."
+    sound: "ENTITY_PLAYER_LEVELUP"
+  making_some_dough:
+    name: "Vydělávání těsta"
+    material: "WHEAT"
+    require: {cookies: 100.0, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    description: "Upečte celkem 100 sušenek."
+    sound: "ENTITY_PLAYER_LEVELUP"
+  so_baked:
+    name: "Upečený na kost"
+    material: "BREAD"
+    require: {cookies: 1000.0, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    description: "Upečte celkem 1 000 sušenek."
+    sound: "ENTITY_PLAYER_LEVELUP"
+  fledgling_bakery:
+    name: "Začínající pekárna"
+    material: "IRON_NUGGET"
+    require: {cookies: 10000.0, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    description: "Upečte celkem 10 000 sušenek."
+    sound: "ENTITY_PLAYER_LEVELUP"
+  affluent_bakery:
+    name: "Bohatá pekárna"
+    material: "GOLD_NUGGET"
+    require: {cookies: 100000.0, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    description: "Upečte celkem 100 000 sušenek."
+    sound: "ENTITY_PLAYER_LEVELUP"
+  millionaire:
+    name: "Sušenkový milionář"
+    material: "GOLD_INGOT"
+    require: {cookies: 1000000.0, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    description: "Upečte celkem 1 000 000 sušenek."
+    sound: "ENTITY_UI_TOAST_CHALLENGE_COMPLETE"
+  multimillionaire:
+    name: "Sušenkový multimilionář"
+    material: "GOLD_BLOCK"
+    require: {cookies: 10000000.0, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    description: "Upečte 10 milionů sušenek."
+    sound: "ENTITY_UI_TOAST_CHALLENGE_COMPLETE"
+  billionaire:
+    name: "Sušenkový miliardář"
+    material: "DIAMOND"
+    require: {cookies: 1000000000.0, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    description: "Upečte celkem 1 000 000 000 sušenek."
+    sound: "ENTITY_UI_TOAST_CHALLENGE_COMPLETE"
+  multibillionaire:
+    name: "Sušenkový multimiliardář"
+    material: "DIAMOND_BLOCK"
+    require: {cookies: 10000000000.0, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    description: "Upečte 10 miliard sušenek."
+    sound: "ENTITY_UI_TOAST_CHALLENGE_COMPLETE"
+  trillionaire:
+    name: "Sušenkový trilionář"
+    material: "EMERALD"
+    require: {cookies: 1000000000000.0, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    description: "Upečte celkem 1 000 000 000 000 sušenek."
+    sound: "ENTITY_UI_TOAST_CHALLENGE_COMPLETE"
+  multitrillionaire:
+    name: "Sušenkový multitrilionář"
+    material: "EMERALD_BLOCK"
+    require: {cookies: 10000000000000.0, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    description: "Upečte 10 trilionů sušenek."
+    sound: "ENTITY_UI_TOAST_CHALLENGE_COMPLETE"
+  quadrillionaire:
+    name: "Sušenkový kvadrilionář"
+    material: "NETHERITE_INGOT"
+    require: {cookies: 1000000000000000.0, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    description: "Upečte 1 kvadrilion sušenek."
+    sound: "ENTITY_UI_TOAST_CHALLENGE_COMPLETE"
+  quintillionaire:
+    name: "Sušenkový kvintilionář"
+    material: "NETHERITE_BLOCK"
+    require: {cookies: 1.0e+18, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    description: "Upečte 1 kvintilion sušenek."
+    sound: "ENTITY_UI_TOAST_CHALLENGE_COMPLETE"
+  sextillionaire:
+    name: "Sušenkový sextilionář"
+    material: "NETHERITE_BLOCK"
+    require: {cookies: 1.0e+21, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    description: "Upečte 1 sextilion sušenek."
+    sound: "ENTITY_UI_TOAST_CHALLENGE_COMPLETE"
+  septillionaire:
+    name: "Sušenkový septilionář"
+    material: "NETHER_STAR"
+    require: {cookies: 1.0e+24, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    description: "Upečte 1 septilion sušenek."
+    sound: "ENTITY_UI_TOAST_CHALLENGE_COMPLETE"
+  octillionaire:
+    name: "Sušenkový oktilionář"
+    material: "BEACON"
+    require: {cookies: 1.0e+27, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    description: "Upečte 1 oktilion sušenek."
+    sound: "ENTITY_UI_TOAST_CHALLENGE_COMPLETE"
+  nonillionaire:
+    name: "Sušenkový nonilionář"
+    material: "DRAGON_EGG"
+    require: {cookies: 1.0e+30, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    description: "Upečte 1 nonilion sušenek."
+    sound: "ENTITY_UI_TOAST_CHALLENGE_COMPLETE"
+  decillionaire:
+    name: "Sušenkový decilionář"
+    material: "END_PORTAL_FRAME"
+    require: {cookies: 1.0e+33, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    description: "Upečte 1 decilion sušenek. Naprosté šílenství!"
+    sound: "ENTITY_UI_TOAST_CHALLENGE_COMPLETE"
+  undecillionaire:
+    name: "Sušenkový undecilionář"
+    material: "CONDUIT"
+    require: {cookies: 1.0e+36, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    description: "Upečte 1 undecilion sušenek."
+    sound: "ENTITY_UI_TOAST_CHALLENGE_COMPLETE"
+  duodecillionaire:
+    name: "Sušenkový duodecilionář"
+    material: "DRAGON_BREATH"
+    require: {cookies: 1.0e+39, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    description: "Upečte 1 duodecilion sušenek."
+    sound: "ENTITY_UI_TOAST_CHALLENGE_COMPLETE"
+
+  # --- PRODUKCE ZA SEKUNDU (CPS Milestones) ---
+  casual_baker:
+    name: "Pohodové pečení"
+    material: "WOODEN_SHOVEL"
+    require: {cookies: 0.0, cps: 1.0, cpc: 0.0, clicked: 0.0}
+    description: "Dosáhněte 1 sušenky za sekundu."
+    sound: "ENTITY_PLAYER_LEVELUP"
+  hardcore_baker:
+    name: "Hardcore pečení"
+    material: "STONE_SHOVEL"
+    require: {cookies: 0.0, cps: 10.0, cpc: 0.0, clicked: 0.0}
+    description: "Dosáhněte 10 sušenek za sekundu."
+    sound: "ENTITY_PLAYER_LEVELUP"
+  steady_tasty_stream:
+    name: "Stabilní chutný proud"
+    material: "IRON_SHOVEL"
+    require: {cookies: 0.0, cps: 100.0, cpc: 0.0, clicked: 0.0}
+    description: "Dosáhněte 100 sušenek za sekundu."
+    sound: "ENTITY_PLAYER_LEVELUP"
+  cookie_monster:
+    name: "Sušenkové monstrum"
+    material: "GOLDEN_SHOVEL"
+    require: {cookies: 0.0, cps: 1000.0, cpc: 0.0, clicked: 0.0}
+    description: "Dosáhněte 1 000 sušenek za sekundu."
+    sound: "ENTITY_PLAYER_LEVELUP"
+  mass_producer:
+    name: "Masový výrobce"
+    material: "DIAMOND_SHOVEL"
+    require: {cookies: 0.0, cps: 10000.0, cpc: 0.0, clicked: 0.0}
+    description: "Dosáhněte 10 000 sušenek za sekundu."
+    sound: "ENTITY_PLAYER_LEVELUP"
+  mega_producer:
+    name: "Mega výrobce"
+    material: "NETHERITE_SHOVEL"
+    require: {cookies: 0.0, cps: 100000.0, cpc: 0.0, clicked: 0.0}
+    description: "Dosáhněte 100 000 sušenek za sekundu."
+    sound: "ENTITY_PLAYER_LEVELUP"
+  cookie_vortex:
+    name: "Sušenkový vír"
+    material: "END_CRYSTAL"
+    require: {cookies: 0.0, cps: 1000000.0, cpc: 0.0, clicked: 0.0}
+    description: "Dosáhněte 1 000 000 sušenek za sekundu."
+    sound: "ENTITY_UI_TOAST_CHALLENGE_COMPLETE"
+  industrial_revolution:
+    name: "Průmyslová revoluce"
+    material: "IRON_BLOCK"
+    require: {cookies: 0.0, cps: 1.0e+9, cpc: 0.0, clicked: 0.0}
+    description: "Dosáhněte 1 000 000 000 sušenek za sekundu."
+    sound: "ENTITY_UI_TOAST_CHALLENGE_COMPLETE"
+  galactic_confectioner:
+    name: "Galaktický cukrář"
+    material: "END_PORTAL_FRAME"
+    require: {cookies: 0.0, cps: 1.0e+15, cpc: 0.0, clicked: 0.0}
+    description: "Dosáhněte 1 kvadrilionu sušenek za sekundu."
+    sound: "ENTITY_UI_TOAST_CHALLENGE_COMPLETE"
+
+  # --- KLIKÁNÍ (Clicking Milestones) ---
+  clicastic:
+    name: "Klikastické"
+    material: "WOODEN_SWORD"
+    require: {cookies: 0.0, cps: 0.0, cpc: 0.0, clicked: 100.0}
+    description: "Klikněte 100krát."
+    sound: "ENTITY_PLAYER_LEVELUP"
+  click_it_to_the_limit:
+    name: "Klikni až na limit"
+    material: "STONE_SWORD"
+    require: {cookies: 0.0, cps: 0.0, cpc: 0.0, clicked: 1000.0}
+    description: "Klikněte 1 000krát."
+    sound: "ENTITY_PLAYER_LEVELUP"
+  hand_made:
+    name: "Ruční práce"
+    material: "IRON_SWORD"
+    require: {cookies: 0.0, cps: 0.0, cpc: 0.0, clicked: 10000.0}
+    description: "Klikněte 10 000krát."
+    sound: "ENTITY_PLAYER_LEVELUP"
+  uncanny_clicker:
+    name: "Nadpřirozený klikač"
+    material: "GOLDEN_SWORD"
+    require: {cookies: 0.0, cps: 0.0, cpc: 0.0, clicked: 27000.0}
+    description: "Klikněte 27 000krát. Jste člověk?"
+    sound: "ENTITY_UI_TOAST_CHALLENGE_COMPLETE"
+
+  # --- BUDOVY (Building Milestones) ---
+  one_of_everything:
+    name: "Jeden od každého"
+    material: "CHEST"
+    require: {cookies: 0.0, cps: 1000.0, cpc: 0.0, clicked: 0.0}
+    description: "Mějte alespoň jednu budovu od každého druhu."
+    sound: "ENTITY_PLAYER_LEVELUP"
+  centennial:
+    name: "Stoleté výročí"
+    material: "PAPER"
+    require: {cookies: 0.0, cps: 5000.0, cpc: 0.0, clicked: 0.0}
+    description: "Mějte 100 kusů budov."
+    sound: "ENTITY_PLAYER_LEVELUP"
+  bicentennial:
+    name: "Dvousté výročí"
+    material: "BOOK"
+    require: {cookies: 0.0, cps: 50000.0, cpc: 0.0, clicked: 0.0}
+    description: "Mějte 200 kusů budov."
+    sound: "ENTITY_PLAYER_LEVELUP"
+  tricentennial:
+    name: "Třísté výročí"
+    material: "WRITABLE_BOOK"
+    require: {cookies: 0.0, cps: 500000.0, cpc: 0.0, clicked: 0.0}
+    description: "Mějte 300 kusů budov."
+    sound: "ENTITY_PLAYER_LEVELUP"
+  quadricentennial:
+    name: "Čtyřsté výročí"
+    material: "ENCHANTED_BOOK"
+    require: {cookies: 0.0, cps: 5000000.0, cpc: 0.0, clicked: 0.0}
+    description: "Mějte 400 kusů budov."
+    sound: "ENTITY_UI_TOAST_CHALLENGE_COMPLETE"
+
+  # --- KURZORY (Cursor Milestones) ---
+  click_happy:
+    name: "Šťastné klikání"
+    material: "WOODEN_HOE"
+    require: {cookies: 0.0, cps: 0.0, cpc: 25.0, clicked: 0.0}
+    description: "Mějte 25 kurzorů."
+    sound: "ENTITY_PLAYER_LEVELUP"
+  click_fever:
+    name: "Klikací horečka"
+    material: "STONE_HOE"
+    require: {cookies: 0.0, cps: 0.0, cpc: 50.0, clicked: 0.0}
+    description: "Mějte 50 kurzorů."
+    sound: "ENTITY_PLAYER_LEVELUP"
+  click_obsessed:
+    name: "Posedlý klikáním"
+    material: "IRON_HOE"
+    require: {cookies: 0.0, cps: 0.0, cpc: 100.0, clicked: 0.0}
+    description: "Mějte 100 kurzorů."
+    sound: "ENTITY_PLAYER_LEVELUP"
+  # --- NEW ACHIEVEMENTS ---
+  the_world_is_yours:
+    name: "Svět ti patří"
+    material: "NETHER_STAR"
+    require: {cookies: 1.0e+36, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    description: "Upečte 1 undecilion sušenek."
+    sound: "ENTITY_UI_TOAST_CHALLENGE_COMPLETE"
+  god_complex:
+    name: "Komplex boha"
+    material: "BEACON"
+    require: {cookies: 1.0e+39, cps: 0.0, cpc: 0.0, clicked: 0.0}
+    description: "Upečte 1 duodecilion sušenek. Vesmír se třese."
+    sound: "ENTITY_UI_TOAST_CHALLENGE_COMPLETE"
+  clicks_millionaire:
+    name: "Milionář v klikání"
+    material: "DIAMOND_SWORD"
+    require: {cookies: 0.0, cps: 0.0, cpc: 0.0, clicked: 1000000.0}
+    description: "Klikněte 1 000 000krát. Opravdu?!?"
+    sound: "ENTITY_UI_TOAST_CHALLENGE_COMPLETE"
+  overclocker:
+    name: "Přetaktovač"
+    material: "REDSTONE_TORCH"
+    require: {cookies: 0.0, cps: 0.0, cpc: 1000000.0, clicked: 0.0}
+    description: "Získejte 1 000 000 sušenek za jediný klik."
+    sound: "ENTITY_UI_TOAST_CHALLENGE_COMPLETE"
+  just_wrong:
+    name: "Takhle ne"
+    material: "BARRIER"
+    require: {cookies: 0.0, cps: 0.0, cpc: 0.0, clicked: 1000000000000.0}
+    description: "Ech, tohle je prostě špatné. Klikněte 1 bilionkrát."
+    sound: "ENTITY_VILLAGER_NO"
+
+rebirth-upgrades:
+  legacy:
+    name: "Odkaz"
+    material: "NETHER_STAR"
+    cost: 1.0
+    cpsPerLevel: "*1.1"
+    clickPerLevel: "*1.1"
+    slot: 10
+    description: "Váš první krok do nebeské říše. Trvale zvyšuje produkci o 10 %."
+  heavenly_magic:
+    name: "Nebeská magie"
+    material: "NETHERITE_INGOT"
+    cost: 5.0
+    require_rebirth: "legacy"
+    cpsPerLevel: "*1.5"
+    clickPerLevel: "*1.5"
+    slot: 11
+    description: "Trvale zvyšuje CPS a klikání o 50 %."
+  twin_gates:
+    name: "Dvojité brány transcendence"
+    material: "END_PORTAL_FRAME"
+    cost: 1.0
+    require_rebirth: "legacy"
+    cpsPerLevel: "*1.05"
+    clickPerLevel: "+0.0"
+    slot: 12
+    description: "Umožňuje sušenkám proudit i mimo vaši přítomnost."
+  heavenly_chip_secret:
+    name: "Tajemství nebeských sušenek"
+    material: "COOKIE"
+    cost: 11.0
+    require_rebirth: "legacy"
+    cpsPerLevel: "*1.25"
+    clickPerLevel: "+0.0"
+    slot: 13
+    description: "Zvyšuje efektivitu vašich nebeských čipů o 25 %."
+  starter_kit:
+    name: "Startovní balíček"
+    material: "WOODEN_PICKAXE"
+    cost: 50.0
+    require_rebirth: "heavenly_magic"
+    cpsPerLevel: "+10.0"
+    clickPerLevel: "+1.0"
+    slot: 14
+    description: "Začněte každou hru s malým základem."
+  box_of_brand_biscuits:
+    name: "Krabice značkových sušenek"
+    material: "CHEST"
+    cost: 25.0
+    require_rebirth: "heavenly_chip_secret"
+    cpsPerLevel: "*1.1"
+    clickPerLevel: "+0.0"
+    slot: 15
+    description: "Komerční sušenky zvyšují CPS o 10 %."
+  heavenly_bakery:
+    name: "Nebeská pekárna"
+    material: "BRICKS"
+    cost: 100.0
+    require_rebirth: "starter_kit"
+    cpsPerLevel: "*2.0"
+    clickPerLevel: "+0.0"
+    slot: 16
+    description: "Pekárna v oblacích, která zdvojnásobuje vaše CPS."
+  angel_blessings:
+    name: "Andělské požehnání"
+    material: "FEATHER"
+    cost: 333.0
+    require_rebirth: "heavenly_bakery"
+    cpsPerLevel: "*1.5"
+    clickPerLevel: "*1.5"
+    slot: 19
+    description: "Trvalý bonus k veškeré produkci."
+  cookie_god:
+    name: "Sušenkový bůh"
+    material: "BEACON"
+    cost: 1000.0
+    require_rebirth: "angel_blessings"
+    cpsPerLevel: "*5.0"
+    clickPerLevel: "*5.0"
+    slot: 20
+    description: "Navždy pětinásobně zvyšuje veškerou produkci."
+  infinite_potential:
+    name: "Nekonečný potenciál"
+    material: "DRAGON_EGG"
+    cost: 10000.0
+    require_rebirth: "cookie_god"
+    cpsPerLevel: "*10.0"
+    clickPerLevel: "*10.0"
+    slot: 21
+    description: "Dosáhněte hranic možného a jděte ještě dál."
