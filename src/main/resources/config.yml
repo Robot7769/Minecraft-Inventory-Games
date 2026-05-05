@@ -1,0 +1,12 @@
+# InvGame Configuration File
+# This file contains the configuration settings for the InvGame plugin.
+
+# SQL Settings
+sql:
+  enabled: true              # Enable or disable SQL database connection
+  type: "mariadb"            # Database type (mariaDB, mysql, postgresql)
+  host: "localhost"          # Database host
+  port: 3306                 # Database port
+  database: "invgame_db"     # Database name
+  username: "root"           # Database username
+  password: "password"       # Database password

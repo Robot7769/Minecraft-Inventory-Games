@@ -1,16 +1,19 @@
-name: InvGames
+name: "InvGames"
 version: '${version}'
 
 main: me.robot7769.InvGames.InvGamesPlugin
 api-version: '1.21'
 load: POSTWORLD
-
+authors:
+  - Robot7769
+  - Turtle
 
 commands:
   game:
     description: Spusti GUI minihru.
     usage: /game <nazev_hry>
     permission: invgames.command.game
+    aliases: [games]
 
 permissions:
   invgames.command.game:
