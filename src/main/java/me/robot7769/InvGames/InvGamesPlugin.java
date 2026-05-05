@@ -50,6 +50,7 @@ public final class InvGamesPlugin extends JavaPlugin {
         if (saveManager != null) {
             saveManager.save();
         }
+        sqlManager.disconnect();
     }
 
     public static SaveManager getSaveManager() {
