@@ -428,6 +428,38 @@ one-time-upgrades:
     one_time: true
     description: "Zvyšuje produkci sušenek o 5 %."
 
+  # --- GOLDEN COOKIE EFFECT UPGRADES ---
+  extended_frenzy:
+    name: "Prodloužené šílenství"
+    material: "GLOWSTONE"
+    baseCost: 1000000.0
+    costMultiplier: 1.0
+    cpsPerLevel: "+0.0"
+    clickPerLevel: "+0.0"
+    require:
+      cookies: 1000000.0
+      cps: 0.0
+      cpc: 0.0
+      clicked: 0.0
+    one_time: true
+    description: "Zdvojnásobuje dobu trvání efektu Frenzy."
+    golden_cookie_mult: "frenzy_duration"
+  extended_click_frenzy:
+    name: "Prodloužené zběsilé klikání"
+    material: "AMETHYST_CLUSTER"
+    baseCost: 2000000.0
+    costMultiplier: 1.0
+    cpsPerLevel: "+0.0"
+    clickPerLevel: "+0.0"
+    require:
+      cookies: 2000000.0
+      cps: 0.0
+      cpc: 0.0
+      clicked: 0.0
+    one_time: true
+    description: "Zdvojnásobuje dobu trvání efektu Click Frenzy."
+    golden_cookie_mult: "click_frenzy_duration"
+
 achievements:
   # --- CELKOVÁ PRODUKCE (Baking Milestones) ---
   wake_and_bake:
@@ -806,3 +838,21 @@ rebirth-upgrades:
     clickPerLevel: "*10.0"
     slot: 21
     description: "Dosáhněte hranic možného a jděte ještě dál."
+
+golden-cookie:
+  enabled: true
+  min_spawn_time: 300 # v sekundách (5 minut)
+  max_spawn_time: 900 # v sekundách (15 minut)
+  effects:
+    frenzy:
+      weight: 40
+      multiplier: 7.0
+      duration: 77 # v sekundách
+    click_frenzy:
+      weight: 10
+      multiplier: 77.0
+      duration: 13 # v sekundách
+    lucky:
+      weight: 50
+      max_percentage: 0.15 # 15 % ze současných sušenek
+      min_amount: 13.0

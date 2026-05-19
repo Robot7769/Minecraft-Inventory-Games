@@ -8,6 +8,10 @@ authors:
   - Robot7769
   - Turtle
 
+depend: []
+softdepend:
+  - PlaceholderAPI
+
 commands:
   game:
     description: Spusti GUI minihru.

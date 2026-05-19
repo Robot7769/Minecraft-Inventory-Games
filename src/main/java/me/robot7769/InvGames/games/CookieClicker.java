@@ -35,6 +35,10 @@ public class CookieClicker extends Minigame {
     private double autoCookiesPerSecond = 0;
     private double totalClicks = 0;
 
+    // Golden Cookie Effect Multipliers
+    private double gcFrenzyDurationMult = 1.0;
+    private double gcClickFrenzyDurationMult = 1.0;
+
     private boolean formatEnabled = true;
     private int formatDecimalPlaces = 2;
     private List<String> formatSuffixes;

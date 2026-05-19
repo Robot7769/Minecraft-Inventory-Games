@@ -6,6 +6,7 @@ import me.robot7769.InvGames.manager.GameManager;
 import me.robot7769.InvGames.manager.SaveManager;
 import me.robot7769.InvGames.manager.SQLManager;
 import me.robot7769.InvGames.manager.ConfigManager;
+import me.robot7769.InvGames.manager.PlaceholderManager;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -40,6 +41,12 @@ public final class InvGamesPlugin extends JavaPlugin {
         } else {
             getLogger().warning("Command 'game' neni definovan v plugin.yml.");
         }
+
+        // Register PlaceholderAPI expansion
+        if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new PlaceholderManager(this, gameManager).register();
+            getLogger().info("PlaceholderAPI expansion registered!");
+        }
     }
 
     @Override
@@ -60,3 +67,5 @@ public final class InvGamesPlugin extends JavaPlugin {
         return configManager;
     }
 }
+
+
