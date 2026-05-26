@@ -44,8 +44,19 @@ public final class InvGamesPlugin extends JavaPlugin {
 
         // Register PlaceholderAPI expansion
         if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            new PlaceholderManager(this, gameManager).register();
-            getLogger().info("PlaceholderAPI expansion registered!");
+            try {
+                PlaceholderManager pm = new PlaceholderManager(this, gameManager);
+                if (pm.register()) {
+                    getLogger().info("PlaceholderAPI expansion 'games' registered successfully!");
+                } else {
+                    getLogger().warning("Failed to register PlaceholderAPI expansion!");
+                }
+            } catch (Exception e) {
+                getLogger().severe("Error registering PlaceholderAPI expansion: " + e.getMessage());
+                e.printStackTrace();
+            }
+        } else {
+            getLogger().info("PlaceholderAPI not found, placeholder support disabled.");
         }
     }
 

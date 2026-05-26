@@ -60,3 +60,7 @@ cookieclicker:
   buy_amount: "&eKoupit %amount%"
   buy_all: "&eKoupit Vše"
   buy_all_lore: "&7Koupit všechno dostupné"
+  gc_spawned: "&6Zlatá sušenka se objevila!"
+  effect_title: "&6&lSoučasný Efekt"
+  effect_frenzy: "&7Šílenství: CPS x7 (%time%s)"
+  effect_click_frenzy: "&bZběsilé Klikání: Kliky x777 (%time%s)"

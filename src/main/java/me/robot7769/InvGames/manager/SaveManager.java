@@ -7,6 +7,8 @@ import org.bukkit.plugin.Plugin;
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
+import java.util.List;
+import java.util.Map;
 
 public class SaveManager {
     private final Plugin plugin;
@@ -138,6 +140,24 @@ public class SaveManager {
             return sqlManager.get(uuid, game, "cookies") != null || sqlManager.get(uuid, game, "score") != null; // basic fallback
         }
         return dataConfig.contains(game + "." + uuid.toString());
+    }
+
+    public java.util.List<java.util.Map.Entry<String, Double>> getTop(String game, String key) {
+        if (sqlManager.isEnabled()) {
+            return sqlManager.getTop(game, key);
+        }
+        java.util.List<java.util.Map.Entry<String, Double>> results = new java.util.ArrayList<>();
+        org.bukkit.configuration.ConfigurationSection gameSec = dataConfig.getConfigurationSection(game);
+        if (gameSec != null) {
+            for (String uuidStr : gameSec.getKeys(false)) {
+                if (gameSec.contains(uuidStr + "." + key)) {
+                    double val = gameSec.getDouble(uuidStr + "." + key, 0);
+                    results.add(new java.util.AbstractMap.SimpleEntry<>(uuidStr, val));
+                }
+            }
+        }
+        results.sort((a, b) -> Double.compare(b.getValue(), a.getValue()));
+        return results;
     }
 
     /**

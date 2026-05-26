@@ -10,3 +10,6 @@ sql:
   database: "invgame_db"     # Database name
   username: "root"           # Database username
   password: "password"       # Database password
+
+# PlaceholderAPI Leaderboard Format
+leaderboard-format: "%player% - %value%"

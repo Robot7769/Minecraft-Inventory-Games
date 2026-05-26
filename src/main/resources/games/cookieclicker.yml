@@ -432,12 +432,12 @@ one-time-upgrades:
   extended_frenzy:
     name: "Prodloužené šílenství"
     material: "GLOWSTONE"
-    baseCost: 1000000.0
+    baseCost: 1000000000.0
     costMultiplier: 1.0
     cpsPerLevel: "+0.0"
     clickPerLevel: "+0.0"
     require:
-      cookies: 1000000.0
+      cookies: 2000000000.0
       cps: 0.0
       cpc: 0.0
       clicked: 0.0
@@ -447,12 +447,12 @@ one-time-upgrades:
   extended_click_frenzy:
     name: "Prodloužené zběsilé klikání"
     material: "AMETHYST_CLUSTER"
-    baseCost: 2000000.0
+    baseCost: 2000000000000.0
     costMultiplier: 1.0
     cpsPerLevel: "+0.0"
     clickPerLevel: "+0.0"
     require:
-      cookies: 2000000.0
+      cookies: 5t00000000000.0
       cps: 0.0
       cpc: 0.0
       clicked: 0.0
@@ -841,8 +841,8 @@ rebirth-upgrades:
 
 golden-cookie:
   enabled: true
-  min_spawn_time: 300 # v sekundách (5 minut)
-  max_spawn_time: 900 # v sekundách (15 minut)
+  min_spawn_time: 120 # v sekundách (3 minut)
+  max_spawn_time: 500 # v sekundách (5 minut)
   effects:
     frenzy:
       weight: 40
