@@ -6,6 +6,8 @@ import org.bukkit.plugin.Plugin;
 import java.sql.*;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.List;
+import java.util.Map;
 
 public class SQLManager {
 
@@ -154,5 +156,31 @@ public class SQLManager {
             plugin.getLogger().warning("Failed to load SQL data: " + e.getMessage());
         }
         return null;
+    }
+
+    public java.util.List<java.util.Map.Entry<String, Double>> getTop(String game, String key) {
+        java.util.List<java.util.Map.Entry<String, Double>> results = new java.util.ArrayList<>();
+        if (!enabled) return results;
+        try {
+            connect();
+            java.sql.PreparedStatement ps = connection.prepareStatement(
+                    "SELECT uuid, data_value FROM invgames_data WHERE game = ? AND data_key = ?"
+            );
+            ps.setString(1, game);
+            ps.setString(2, key);
+            java.sql.ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                String uuidStr = rs.getString("uuid");
+                String valStr = rs.getString("data_value");
+                try {
+                    double val = Double.parseDouble(valStr);
+                    results.add(new java.util.AbstractMap.SimpleEntry<>(uuidStr, val));
+                } catch (NumberFormatException ignored) {}
+            }
+        } catch (java.sql.SQLException e) {
+            plugin.getLogger().warning("Failed to load SQL top data: " + e.getMessage());
+        }
+        results.sort((a, b) -> Double.compare(b.getValue(), a.getValue()));
+        return results;
     }
 }

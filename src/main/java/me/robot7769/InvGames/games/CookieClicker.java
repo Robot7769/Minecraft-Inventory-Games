@@ -35,6 +35,10 @@ public class CookieClicker extends Minigame {
     private double autoCookiesPerSecond = 0;
     private double totalClicks = 0;
 
+    // Golden Cookie Effect Multipliers
+    private double gcFrenzyDurationMult = 1.0;
+    private double gcClickFrenzyDurationMult = 1.0;
+
     private boolean formatEnabled = true;
     private int formatDecimalPlaces = 2;
     private List<String> formatSuffixes;
@@ -45,6 +49,15 @@ public class CookieClicker extends Minigame {
     private enum MenuState { MAIN, UPGRADES, ONE_TIME, ACHIEVEMENTS, REBIRTH }
     private MenuState menuState = MenuState.MAIN;
     private int currentAchPage = 0;
+
+    private boolean gcEnabled = true;
+    private int gcMinSpawnTime = 300;
+    private int gcMaxSpawnTime = 900;
+    private int gcTimer = 300;
+    private int gcSpawnedSlot = -1;
+    private int gcAwayTimer = 0;
+    private int frenzyTimer = 0;
+    private int clickFrenzyTimer = 0;
 
     private List<Upgrade> upgrades;
     private List<Upgrade> oneTimeUpgrades;
@@ -132,8 +145,18 @@ public class CookieClicker extends Minigame {
             config.set("upgrades.multiplier.require.click", 0.0);
             config.set("upgrades.multiplier.description", "Multiplies total gain by 10%");
 
+            config.set("golden-cookie.enabled", true);
+            config.set("golden-cookie.min_spawn_time", 300);
+            config.set("golden-cookie.max_spawn_time", 900);
+
             InvGamesPlugin.getConfigManager().saveGameConfig(config, "cookieclicker");
         }
+
+        this.gcEnabled = config.getBoolean("golden-cookie.enabled", true);
+        this.gcMinSpawnTime = config.getInt("golden-cookie.min_spawn_time", 300);
+        this.gcMaxSpawnTime = config.getInt("golden-cookie.max_spawn_time", 900);
+        if (gcMaxSpawnTime < gcMinSpawnTime) gcMaxSpawnTime = gcMinSpawnTime;
+        resetGcTimer();
 
         this.invSize = config.getInt("inventory_size", 45);
         this.cookieSlot = config.getInt("slots.cookie", 22);
@@ -227,19 +250,13 @@ public class CookieClicker extends Minigame {
             msgConfig.set("cookieclicker.lore_ascend_1", "&7Forfeit your cookies to ascend.");
             msgConfig.set("cookieclicker.lore_ascend_2", "&bPending Chips: &f%chips%");
             msgConfig.set("cookieclicker.lore_ascend_3", "&eCurrent Cookies: %cookies%");
-            msgConfig.set("cookieclicker.rebirth_purchased", "&a&lPURCHASED");
-            msgConfig.set("cookieclicker.rebirth_cost_afford", "&eCost: %cost% Chips");
-            msgConfig.set("cookieclicker.rebirth_cost_deny", "&cCost: %cost% Chips");
-            msgConfig.set("cookieclicker.upgrade_level", "&a%name% &7(Level %level%)");
-            msgConfig.set("cookieclicker.upgrade_cost_afford", "&eCost: %cost%");
-            msgConfig.set("cookieclicker.upgrade_cost_deny", "&cCost: %cost% &4(Too expensive)");
-            msgConfig.set("cookieclicker.msg_ascended", "&dYou Ascended and received &b%chips% Heavenly Chips&d!");
-            msgConfig.set("cookieclicker.msg_achievement", "&d&lAchievement Unlocked: &e%name%");
-
             msgConfig.set("cookieclicker.buy_amount", "&fPurchase Amount: &e%amount%");
             msgConfig.set("cookieclicker.buy_all", "&6&lBuy All One-Time Upgrades");
             msgConfig.set("cookieclicker.buy_all_lore", "&7Click to purchase all affordable upgrades");
-
+            msgConfig.set("cookieclicker.gc_spawned", "&6A Golden Cookie has appeared!");
+            msgConfig.set("cookieclicker.effect_title", "&6&lCurrent Effect");
+            msgConfig.set("cookieclicker.effect_frenzy", "&7Frenzy: CPS x7 (%time%s)");
+            msgConfig.set("cookieclicker.effect_click_frenzy", "&bClick Frenzy: Clicks x777 (%time%s)");
             InvGamesPlugin.getConfigManager().saveMessages(msgConfig, "messages");
         }
     }
@@ -280,13 +297,14 @@ public class CookieClicker extends Minigame {
                 double reqCps = config.getDouble(path + "require.cps", 0.0);
                 double reqCpc = config.getDouble(path + "require.cpc", config.getDouble(path + "require.click", 0.0));
                 double reqClicked = config.getDouble(path + "require.clicked", 0.0);
-                String reqRebirth = config.getString(path + "require.rebirth", "");
+                String reqRebirth = config.getString(path + "require_rebirth", "");
+                String gcMult = config.getString(path + "golden_cookie_mult", "");
 
                 boolean oneTime = config.getBoolean(path + "one_time", false);
 
                 String desc = config.getString(path + "description", "");
 
-                list.add(new Upgrade(key, name, mat, baseCost, costMult, cpsAdd, cpsMult, clickAdd, clickMult, reqCookies, reqCps, reqCpc, reqClicked, reqRebirth, oneTime, desc));
+                list.add(new Upgrade(key, name, mat, baseCost, costMult, cpsAdd, cpsMult, clickAdd, clickMult, reqCookies, reqCps, reqCpc, reqClicked, reqRebirth, oneTime, desc, gcMult));
             }
         }
         return list;
@@ -358,6 +376,16 @@ public class CookieClicker extends Minigame {
             if (ru.unlocked) {
                 multAuto *= ru.cpsMult;
                 multClick *= ru.clickMult;
+                // Wait, one_time upgrades actually have golden_cookie_mult as per the config
+            }
+        }
+
+        gcFrenzyDurationMult = 1.0;
+        gcClickFrenzyDurationMult = 1.0;
+        for (Upgrade u : oneTimeUpgrades) {
+            if (u.level > 0 && u.gcMult != null) {
+                if (u.gcMult.equals("frenzy_duration")) gcFrenzyDurationMult *= 2.0;
+                if (u.gcMult.equals("click_frenzy_duration")) gcClickFrenzyDurationMult *= 2.0;
             }
         }
 
@@ -471,8 +499,13 @@ public class CookieClicker extends Minigame {
     @Override
     public void onClick(int slot) {
         if (menuState == MenuState.MAIN) {
+            if (slot == gcSpawnedSlot) {
+                clickGoldenCookie();
+                return;
+            }
             if (slot == cookieSlot) {
-                cookies += clickMultiplier;
+                cookies += getEffectiveCpc();
+                totalClicks++;
                 checkAchievements();
                 render();
                 return;
@@ -639,6 +672,45 @@ public class CookieClicker extends Minigame {
         return pending;
     }
 
+    private void resetGcTimer() {
+        if (!gcEnabled) return;
+        gcTimer = gcMinSpawnTime + (int)(Math.random() * (gcMaxSpawnTime - gcMinSpawnTime + 1));
+    }
+
+    private void clickGoldenCookie() {
+        gcSpawnedSlot = -1;
+        resetGcTimer();
+
+        double rand = Math.random();
+        FileConfiguration msgConfig = InvGamesPlugin.getConfigManager().getMessages("messages");
+        try {
+            player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
+        } catch (Exception ignored) {}
+
+        if (rand < 0.33) {
+            int duration = (int)(77 * gcFrenzyDurationMult);
+            frenzyTimer = duration;
+            player.sendMessage(translate(msgConfig.getString("cookieclicker.gc_frenzy", "&6Frenzy!").replace("%time%", String.valueOf(duration))));
+        } else if (rand < 0.66) {
+            int duration = (int)(13 * gcClickFrenzyDurationMult);
+            clickFrenzyTimer = duration;
+            player.sendMessage(translate(msgConfig.getString("cookieclicker.gc_click_frenzy", "&bClick Frenzy!").replace("%time%", String.valueOf(duration))));
+        } else {
+            double gained = Math.max(autoCookiesPerSecond * 900, cookies * 0.15); // 15 mins of cps or 15% of bank
+            cookies += gained;
+            player.sendMessage(translate(msgConfig.getString("cookieclicker.gc_lucky", "&aLucky!").replace("%cookies%", formatNumber(gained))));
+        }
+        render();
+    }
+
+    private double getEffectiveCps() {
+        return autoCookiesPerSecond * (frenzyTimer > 0 ? 7 : 1);
+    }
+
+    private double getEffectiveCpc() {
+        return clickMultiplier * (clickFrenzyTimer > 0 ? 777 : 1);
+    }
+
     private boolean hasRebirthUpgrade(String id) {
         for (RebirthUpgrade ru : rebirthUpgrades) {
             if (ru.id.equals(id)) return ru.unlocked;
@@ -671,9 +743,46 @@ public class CookieClicker extends Minigame {
 
     @Override
     public void onTick() {
-        if (autoCookiesPerSecond > 0) {
-            cookies += autoCookiesPerSecond;
+        if (frenzyTimer > 0) frenzyTimer--;
+        if (clickFrenzyTimer > 0) clickFrenzyTimer--;
+
+        if (gcEnabled) {
+            if (gcSpawnedSlot == -1) {
+                gcTimer--;
+                if (gcTimer <= 0) {
+                    // Spawn golden cookie
+                    List<Integer> emptySlots = new ArrayList<>();
+                    if (inventory != null) {
+                        for (int i = 0; i < invSize; i++) {
+                            if (i == cookieSlot || i == upgradesButtonSlot || i == oneTimeButtonSlot || i == achievementsButtonSlot || i == rebirthButtonSlot || i == backButtonSlot || i == prevPageButtonSlot || i == nextPageButtonSlot || i == purchaseToggleSlot || i == buyAllOneTimeSlot) continue;
+                            emptySlots.add(i);
+                        }
+                        if (!emptySlots.isEmpty()) {
+                            gcSpawnedSlot = emptySlots.get((int)(Math.random() * emptySlots.size()));
+                            gcAwayTimer = 13;
+                            FileConfiguration msgConfig = InvGamesPlugin.getConfigManager().getMessages("messages");
+                            player.sendMessage(translate(msgConfig.getString("cookieclicker.gc_spawned", "&6A Golden Cookie has appeared!")));
+                            try {
+                                player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 1.0f);
+                            } catch (Exception ignored) {}
+                        }
+                    }
+                }
+            } else {
+                gcAwayTimer--;
+                if (gcAwayTimer <= 0) {
+                    gcSpawnedSlot = -1;
+                    resetGcTimer();
+                }
+            }
+        }
+
+        if (getEffectiveCps() > 0) {
+            cookies += getEffectiveCps();
             checkAchievements();
+            render();
+        } else if (gcEnabled && (gcSpawnedSlot != -1 || gcAwayTimer > 0 || frenzyTimer > 0 || clickFrenzyTimer > 0)) {
+            // Need to render if timers update even without cps
             render();
         }
     }
@@ -690,12 +799,31 @@ public class CookieClicker extends Minigame {
         FileConfiguration msgConfig = InvGamesPlugin.getConfigManager().getMessages("messages");
 
         String strCookies = translate(msgConfig.getString("cookieclicker.stats_cookies", "&fCookies: &e%cookies%").replace("%cookies%", formatNumber(cookies)));
-        String strClick = translate(msgConfig.getString("cookieclicker.stats_click", "&fCookies per click: &e%click%").replace("%click%", formatNumber(clickMultiplier)));
-        String strCps = translate(msgConfig.getString("cookieclicker.stats_cps", "&fCookies per second: &e%cps%").replace("%cps%", formatNumber(autoCookiesPerSecond)));
+        String strClick = translate(msgConfig.getString("cookieclicker.stats_click", "&fCookies per click: &e%click%").replace("%click%", formatNumber(getEffectiveCpc())));
+        String strCps = translate(msgConfig.getString("cookieclicker.stats_cps", "&fCookies per second: &e%cps%").replace("%cps%", formatNumber(getEffectiveCps())));
         String strReturn = translate(msgConfig.getString("cookieclicker.lore_return", "&7Return to game"));
         String backName = translate(msgConfig.getString("cookieclicker.back", "&c&lBack"));
 
         if (menuState == MenuState.MAIN) {
+            if (frenzyTimer > 0) {
+                strCps += " §6(Frenzy " + frenzyTimer + "s)";
+            }
+            if (clickFrenzyTimer > 0) {
+                strClick += " §b(Click Frenzy " + clickFrenzyTimer + "s)";
+            }
+
+            if (frenzyTimer > 0 || clickFrenzyTimer > 0) {
+                String effectTitle = translate(msgConfig.getString("cookieclicker.effect_title", "&6&lCurrent Effect"));
+                List<String> effectLore = new ArrayList<>();
+                if (frenzyTimer > 0) {
+                    effectLore.add(translate(msgConfig.getString("cookieclicker.effect_frenzy", "&7Frenzy: CPS x7 (%time%s)").replace("%time%", String.valueOf(frenzyTimer))));
+                }
+                if (clickFrenzyTimer > 0) {
+                    effectLore.add(translate(msgConfig.getString("cookieclicker.effect_click_frenzy", "&bClick Frenzy: Clicks x777 (%time%s)").replace("%time%", String.valueOf(clickFrenzyTimer))));
+                }
+                inventory.setItem(0, createItem(Material.GLOWSTONE_DUST, effectTitle, effectLore));
+            }
+
             // Render main cookie
             String cookieName = translate(msgConfig.getString("cookieclicker.cookie_name", "&6&lThe Ultimate Cookie"));
             ItemStack cookie = createItem(Material.COOKIE, cookieName);
@@ -730,6 +858,10 @@ public class CookieClicker extends Minigame {
                 String rbLore1 = translate(msgConfig.getString("cookieclicker.lore_rebirth_1", "&7Ascend and unlock heavenly magic"));
                 String rbLore2 = translate(msgConfig.getString("cookieclicker.lore_rebirth_2", "&bChips: %chips%").replace("%chips%", formatNumber(heavenlyChips)));
                 inventory.setItem(rebirthButtonSlot, createItem(Material.NETHER_STAR, rbName, List.of(rbLore1, rbLore2)));
+            }
+
+            if (gcSpawnedSlot != -1) {
+                inventory.setItem(gcSpawnedSlot, createItem(Material.GOLD_NUGGET, "§6§lGolden Cookie", List.of("§7Click me!", "§7Disappears in " + gcAwayTimer + "s")));
             }
 
         } else if (menuState == MenuState.ACHIEVEMENTS) {
@@ -913,6 +1045,7 @@ public class CookieClicker extends Minigame {
         String description;
         String requireRebirth;
         boolean unlocked = false;
+        String gcMult;
 
         public RebirthUpgrade(String id, String name, Material material, double cost, double cpsMult, double clickMult, int slot, String description, String requireRebirth) {
             this.id = id;
@@ -945,10 +1078,11 @@ public class CookieClicker extends Minigame {
         String reqRebirth;
         boolean oneTime;
         String description;
+        String gcMult;
 
         public Upgrade(String id, String name, Material material, double baseCost, double costMultiplier,
                        double cpsAdd, double cpsMult, double clickAdd, double clickMult,
-                       double reqCookies, double reqCps, double reqCpc, double reqClicked, String reqRebirth, boolean oneTime, String description) {
+                       double reqCookies, double reqCps, double reqCpc, double reqClicked, String reqRebirth, boolean oneTime, String description, String gcMult) {
             this.id = id;
             this.name = name;
             this.material = material;
@@ -965,6 +1099,7 @@ public class CookieClicker extends Minigame {
             this.reqRebirth = reqRebirth;
             this.oneTime = oneTime;
             this.description = description;
+            this.gcMult = gcMult;
         }
 
         public int getCurrentCost() {

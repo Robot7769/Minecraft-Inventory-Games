@@ -16,6 +16,10 @@ public class GameManager {
     private final Map<UUID, Minigame> activeGames = new HashMap<>();
     private BukkitTask tickerTask;
 
+    public java.util.Collection<Minigame> getActiveGames() {
+        return activeGames.values();
+    }
+
     public void startGame(Player player, Minigame game) {
         stopGame(player);
         activeGames.put(player.getUniqueId(), game);
@@ -59,4 +63,3 @@ public class GameManager {
         }.runTaskTimer(plugin, 0L, 1L);
     }
 }
-
